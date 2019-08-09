@@ -26,7 +26,10 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 
 
 ##### Segementation results with Keras
-![ground truth]()
+<figure align="center">
+	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/Ground%20Truth.png" alt="Ground-Truth"  width="350" height="300" title="Ground-Truth">
+	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/predictions.png" alt="Prediction"  width="400" height="300">
+</figure>
 
 ## Python Libraries Required to Run the Code
 * tensorflow-gpu==1.14
