@@ -1,4 +1,4 @@
-# full-reimplemnetation-of-unet
+# full-reimplemnetation-of-unet (not the final version, modifying)
 This is a full implementation of UNet using **TensorFlow with low level API** and **high level API** as well as **Keras**.
 
 If you need to read detailed description of UNet architecture, please refer to journal article which was proposed by Ronneberger et al. [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/pdf/1505.04597.pdf)
@@ -13,10 +13,16 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 * Besides, I also did not calculate the loss using cross entropy. Instead, dice loss is applied.
 
 ## How to use the code
-##### Structure of the repository
-
-  
-
+##### Description of files and directories
+- data (directory): please put your own images and masks data here, but you should note that you might need to change the code in order to read data correctly.
+- unet (directory): this is the implementation code of tensorflow low level api
+  - "loss.py": python file that defines loss functions
+  - "unet_components": python file that defines convolution op, pooling op, deconvolution op, weights and biases initialization
+  - "unet_model": defines whole process of how to train UNet architecture
+  - "predict.py": load trained model and then use it to predict validation/test images
+- "utils.py": defines functions used to get images and masks paths and dataloader function
+- "train.py": tensorflow high level api implementation of UNet, run this file to directly train the model
+- "unet_keras.py": keras implementation of UNet, run this file to directly train the model
 
 ## Results
 ##### Segmentation results with TF Low Level API
