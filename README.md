@@ -33,8 +33,8 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 
 ##### Segementation results with Keras
 <figure align="center">
-	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/Ground%20Truth.png" alt="Ground-Truth"  width="350" height="300" title="Ground-Truth">
-	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/predictions.png" alt="Prediction"  width="400" height="300">
+	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/Ground%20Truth.png" alt="Ground-Truth"  width="300" height="280" title="Ground-Truth">
+	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/predictions.png" alt="Prediction"  width="300" height="280">
 </figure>
 
 ## Python Libraries Required to Run the Code
@@ -44,4 +44,4 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 * tqdm==4.32.1
 * numpy==1.16.4
 
-Note: it is bettern to create a virtual environment in case there are conflicts between different projects.
+Note: it is better to create a virtual environment in case there are conflicts between different projects.
