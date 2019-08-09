@@ -32,6 +32,7 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 
 
 ##### Segementation results with Keras
+The left image is the ground truth while the right image is the segmentation result.
 <p align="center">
 	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/Ground%20Truth.png" width="300" height="280">
 	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/predictions.png" width="300" height="280">
