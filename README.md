@@ -26,7 +26,7 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 
 
 ##### Segementation results with Keras
-![ground truth]()
+![ground truth](https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/Ground%20Truth.png)
 
 ## Python Libraries Required to Run the Code
 * tensorflow-gpu==1.14
