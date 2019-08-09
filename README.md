@@ -25,13 +25,13 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 - "unet_keras.py": keras implementation of UNet, run this file to directly train the model
 
 ## Results
-##### Segmentation results with TF Low Level API
+### Segmentation results with TF Low Level API
 
 
-##### Segmentation results with TF High Level API
+### Segmentation results with TF High Level API
 
 
-##### Segementation results with Keras
+### Segementation results with Keras
 The left image is the ground truth while the right image is the segmentation result.
 <p align="center">
 	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/Ground%20Truth.png" width="300" height="280">
