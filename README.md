@@ -20,10 +20,12 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
   - "unet_components": python file that defines convolution op, pooling op, deconvolution op, weights and biases initialization
   - "unet_model": defines whole process of how to train UNet architecture
   - "predict.py": load trained model and then use it to predict validation/test images
+  - "metrics.py": define the function of "intersection over union" for evaluating the segmentation results
 - "utils.py": defines functions used to get images and masks paths and dataloader function
 - "train.py": run this file to train TF low level api implementation of UNet
 - "unet_tf.py": tensorflow high level api implementation of UNet, run this file to directly train the model
 - "unet_keras.py": keras implementation of UNet, run this file to directly train the model
+- "predict_keras.py": used to predict images using trained model by Keras
 
 ##### Tips for modifying hyper-parameters to successfully run the code
 - If you want to use this code to train on your own dataset quickly, you can directly modify corresponding hyperparameters in "unet_keras.py" and "unet_tf.py" with correct dataloader;
