@@ -1,4 +1,4 @@
-# full-reimplemnetation-of-unet (not the final version, modifying)
+# Full-reimplemnetation-of-unet (not the final version, modifying)
 This is a full implementation of UNet using **TensorFlow with low level API** and **high level API** as well as **Keras**.
 
 If you need to read detailed description of UNet architecture, please refer to journal article which was proposed by Ronneberger et al. [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/pdf/1505.04597.pdf)
