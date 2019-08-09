@@ -32,18 +32,10 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 
 
 ##### Segementation results with Keras
-<table align="center">
-	<tr>
-		<figure align="center">
-			<td><img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/Ground%20Truth.png" alt="Ground-Truth"  width="300" height="280" title="Ground-Truth"></td>
-			<td><img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/predictions.png" alt="Prediction"  width="300" height="280"></td>
-		</figure>
-	</tr>
-	<tr>
-		<td align="center">Ground Truth</td>
-		<td align="center">Prediction</td>
-	</tr>
-</table>
+<p align="center">
+	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/Ground%20Truth.png" width="300" height="280">
+	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/predictions.png" width="300" height="280">
+</p>
 
 ## Python Libraries Required to Run the Code
 * tensorflow-gpu==1.14
