@@ -1,4 +1,4 @@
-# Full Re-implementation of UNet for Medical Image Segmentation (not the final version, modifying)
+# Full Re-implementation of UNet for Medical Image Segmentation
 This is a full implementation of UNet using **TensorFlow with low level API** and **high level API** as well as **Keras**.
 
 If you need to read detailed description of UNet architecture, please refer to journal article which was proposed by Ronneberger et al. [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/pdf/1505.04597.pdf)
@@ -46,6 +46,7 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/Ground%20Truth.png" width="300" height="280">
 	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/predictions.png" width="300" height="280">
 </p>
+
 ##### Training loss and mIOU
 
 ## Python Libraries Required to Run the Code
