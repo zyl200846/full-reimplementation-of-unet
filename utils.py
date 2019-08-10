@@ -56,7 +56,7 @@ def image_generator(img_paths, mask_paths):
         img = io.imread(img_path)
         img = standardize(img)
         img = np.expand_dims(img, axis=2)
-        mask = rgb2gray(io.imread(mask_path))
+        mask = rgb2gray(io.imread(mask_path)) / 255.
         mask = np.expand_dims(mask, axis=2)
         mask = (mask >= 0.5).astype(np.float32)
 

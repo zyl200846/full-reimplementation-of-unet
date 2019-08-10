@@ -15,9 +15,8 @@ masks_folder = "./data/2d_masks/"
 tr_paths, v_paths = get_train_val_paths(image_folder, masks_folder)
 
 inputs = Input((512, 512, 1))
-s = Lambda(lambda x: x / 255)(inputs)
 
-c1 = Conv2D(16, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same')(s)
+c1 = Conv2D(16, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same')(inputs)
 c1 = Dropout(0.1)(c1)
 c1 = Conv2D(16, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same')(c1)
 p1 = MaxPooling2D((2, 2))(c1)
