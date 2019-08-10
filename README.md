@@ -34,16 +34,19 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 ## Results
 ### Segmentation results with TF Low Level API
 
+##### Training loss and mIOU
 
 ### Segmentation results with TF High Level API
 
+##### Training loss and mIOU
 
 ### Segementation results with Keras
-The left image is the ground truth while the right image is the segmentation result.
+##### The left image is the ground truth while the right image is the segmentation result.
 <p align="center">
 	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/Ground%20Truth.png" width="300" height="280">
 	<img src="https://github.com/JielongZ/full-reimplemnetation-of-unet/blob/master/images/predictions.png" width="300" height="280">
 </p>
+##### Training loss and mIOU
 
 ## Python Libraries Required to Run the Code
 * tensorflow-gpu==1.14
