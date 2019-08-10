@@ -6,7 +6,8 @@ from keras.models import Model
 from keras.layers.merge import concatenate
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from utils import img_batch_generator, get_train_val_paths
-from unet.metrics import mean_iou, dice_loss
+from unet.loss import dice_loss
+from unet.metrics import mean_iou
 
 
 image_folder = "./data/2d_images/"
@@ -76,7 +77,7 @@ val_gen = img_batch_generator(v_paths["val_imgs"], v_paths["val_mask"], batch_si
 train_steps = len(tr_paths["train_imgs"]) // batch_size
 val_steps = len(v_paths["val_imgs"]) // batch_size
 early_stop = EarlyStopping(patience=10, verbose=1)
-checkpoint = ModelCheckpoint("unet_model.h5", verbose=1, save_best_only=True)
+checkpoint = ModelCheckpoint("keras_unet_model.h5", verbose=1, save_best_only=True)
 history = model.fit_generator(train_gen, steps_per_epoch=train_steps,
                               epochs=50,
                               validation_data=val_gen,

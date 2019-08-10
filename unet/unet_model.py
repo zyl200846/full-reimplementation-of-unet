@@ -3,18 +3,19 @@
 # @Time: 01/08/2019 14:41
 import tensorflow as tf
 from unet.unet_components import weight_init, bias_init, conv2d, max_pool, deconv2d, crop_and_copy
-from unet.metrics import dice_coefficient, dice_loss, binary_bce_dice_loss, mean_iou
-from utils import get_train_val_paths, img_batch_generator, mini_batch_data
+from unet.loss import dice_loss
+from utils import get_imgs_masks, get_batch_data
 
 
 class UnetModel(object):
 
-    def __init__(self, learning_rate=0.0005, model_depth=4, conv_ops=2, k_size=3,
+    def __init__(self, learning_rate=0.0001, batch_size=2, model_depth=5, conv_ops=2, k_size=3,
                  pool_size=2, feature_maps_root=16, dropout_rate=0.2):
         self.x = tf.compat.v1.placeholder(dtype=tf.float32, shape=[2, 512, 512, 1], name="x_input")
         self.y = tf.compat.v1.placeholder(dtype=tf.float32, shape=[2, 512, 512, 1], name="y_label")
 
         self.learning_rate = learning_rate
+        self.batch_size = batch_size
         self.model_depth = model_depth
         self.conv_ops = conv_ops
         self.k_size = k_size
@@ -114,29 +115,25 @@ class UnetModel(object):
 
         return output
 
-    def train(self, data_gen, n_epochs, n_samples):
+    def train(self, data_gen, images, labels, n_epochs, n_samples):
         logits = self.build_model(self.x)
 
         with tf.name_scope("training_op"):
-            loss = self.get_loss(y_true=self.y, y_preds=logits, loss_mode="cross_entropy")
-            # optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=self.learning_rate)
+            loss = self.get_loss(y_true=self.y, y_preds=logits, loss_mode="dice_loss")
             optimizer = self.get_optimizer(opt="Adam")
             training_op = optimizer.minimize(loss)
-            var_grad = tf.gradients(loss, [logits])[0]
 
         init = tf.compat.v1.global_variables_initializer()
         with tf.compat.v1.Session() as sess:
             init.run()
-            training_steps_per_epoch = n_samples // batch_size
+            training_steps_per_epoch = n_samples // self.batch_size
             for epoch in range(n_epochs):
+                print("Start training epoch {}".format(epoch + 1))
                 total_loss = 0
                 for step in range(training_steps_per_epoch):
-                    x_batch, y_batch = next(data_gen)
-                    lg_loss, _ = sess.run([loss, training_op], feed_dict={self.x: x_batch, self.y: y_batch})
-                    # var_gra_val = sess.run(var_grad, feed_dict={self.x: x_batch, self.y: y_batch})
-                    print("Training step {:}, the step loss: {:.4f}".format(step, lg_loss))
-                    # print("Gradients: ", var_gra_val)
-                    total_loss += lg_loss
+                    x_batch, y_batch = data_gen(images, labels, step, self.batch_size)
+                    loss_val, _ = sess.run([loss, training_op], feed_dict={self.x: x_batch, self.y: y_batch})
+                    total_loss += loss_val
                 print("Epoch: {:}, Average loss: {:.4f}".format((epoch + 1), (total_loss / training_steps_per_epoch)))
 
     @staticmethod
@@ -149,11 +146,6 @@ class UnetModel(object):
                 y_preds_flattened = tf.reshape(y_preds, [-1])
                 loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y_true_flattened,
                                                                               logits=y_preds_flattened))
-            # elif loss_mode == "softmax_with_cross_entropy":
-            #     y_preds_reshaped = tf.reshape(y_preds, [-1, 1])
-            #     y_true_reshaped = tf.reshape(y_true, [-1])
-            #     loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y_true_reshaped,
-            #                                                                          logits=y_preds_reshaped))
             else:
                 raise ValueError("Unknown Cost Function: %s" % loss_mode)
         return tf.convert_to_tensor(loss)
@@ -191,22 +183,11 @@ class UnetModel(object):
 if __name__ == "__main__":
     image_folder = "../data/2d_images/"
     masks_folder = "../data/2d_masks/"
-    batch_size = 2
-    tr_paths, v_paths = get_train_val_paths(image_folder, masks_folder)
-    train_gen = mini_batch_data(tr_paths["train_imgs"], tr_paths["train_mask"], batch_size=batch_size)
-    no_samples = len(tr_paths["train_imgs"])
+    # # tr_paths, v_paths = get_train_val_paths(image_folder, masks_folder)
+    images, labels = get_imgs_masks(image_folder, masks_folder)
+    # print(images[0].shape)
+    no_samples = images.shape[0]
+    batch_size = 4
+    n_epochs = 40
     unet = UnetModel()
-    unet.train(data_gen=train_gen, n_epochs=5, n_samples=no_samples)
-    # import numpy as np
-    # x_train = np.random.normal(size=(2, 512, 512, 1))
-    # y_train = np.random.normal(size=(2, 512, 512, 1))
-    #
-    # X = tf.compat.v1.placeholder(dtype=tf.float32, shape=[2, 512, 512, 1], name="x")
-    # y = tf.compat.v1.placeholder(dtype=tf.float32, shape=[2, 512, 512, 1], name="y")
-    # unet = UnetModel()
-    # output = unet.build_model(X)
-    #
-    # init = tf.compat.v1.global_variables_initializer()
-    # with tf.compat.v1.Session() as sess:
-    #     init.run()
-    #     print(sess.run(output, feed_dict={X: x_train}))
+    unet.train(data_gen=get_batch_data, images=images, labels=labels, n_epochs=n_epochs, n_samples=no_samples)
