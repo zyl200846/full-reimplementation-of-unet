@@ -56,4 +56,4 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 * tqdm==4.32.1
 * numpy==1.16.4
 
-Note: it is better to create a virtual environment in case there are conflicts between different projects.
+Note: it is better to create a virtual environment in case there are conflicts between different projects. Moreover, this code has been successfully run on Windows and trained via Nvidia GTX1060, GTX1080 and GTX1080Ti with variant batch size.
