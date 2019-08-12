@@ -11,6 +11,17 @@ class UnetModel(object):
 
     def __init__(self, learning_rate=0.0001, batch_size=2, model_depth=5, conv_ops=2, k_size=3,
                  pool_size=2, feature_maps_root=16, dropout_rate=0.2):
+        """
+        Initialization
+        :param learning_rate: learning rate set for the network
+        :param batch_size: batch size of the image
+        :param model_depth: the depth of the model, recommended no less than 4 (>= 4)
+        :param conv_ops: the convolution block
+        :param k_size: kernel size of the filter, default k_size=3
+        :param pool_size: pooling size, default = 2
+        :param feature_maps_root: the base feature map/channels
+        :param dropout_rate: the dropout rate for the network
+        """
         self.x = tf.compat.v1.placeholder(dtype=tf.float32, shape=[2, 512, 512, 1], name="x_input")
         self.y = tf.compat.v1.placeholder(dtype=tf.float32, shape=[2, 512, 512, 1], name="y_label")
 
@@ -24,8 +35,13 @@ class UnetModel(object):
         self.dropout_rate = dropout_rate
 
     def build_model(self, X):
+        """
+        the whole training process, accept only one input: X
+        :param X: the input image
+        :return: output
+        """
         # Extraction Path
-        convs_rslt = []
+        convs_rslt = []        # to save intermediate results of each convolution block 2 * conv followed by one maxpool
         for depth in range(self.model_depth):
             print("the down level is: ", depth)
             feature_maps = 2 ** depth * self.feat_maps_root
@@ -116,6 +132,15 @@ class UnetModel(object):
         return output
 
     def train(self, data_gen, images, labels, n_epochs, n_samples):
+        """
+
+        :param data_gen: data generator to yield image for training
+        :param images: the whole dataset of images
+        :param labels: the whole dataset of mask images
+        :param n_epochs: number of epochs for training
+        :param n_samples: total training samples
+        :return: None
+        """
         logits = self.build_model(self.x)
 
         with tf.name_scope("training_op"):
@@ -165,6 +190,9 @@ class UnetModel(object):
             self.load_model(sess, model_path)
             predictions = sess.run(feed_dict={self.x: test_data})
         return predictions
+
+    def model_evaluation(self):
+        pass
 
     @staticmethod
     def dump_model(sess, model_path):
