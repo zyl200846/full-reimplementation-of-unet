@@ -1,4 +1,5 @@
-from keras.layers.core import Dropout, Lambda
+import matplotlib.pyplot as plt
+from keras.layers.core import Dropout
 from keras.layers.convolutional import Conv2D, Conv2DTranspose
 from keras.layers.pooling import MaxPooling2D
 from keras.layers import Input
@@ -85,4 +86,19 @@ history = model.fit_generator(train_gen, steps_per_epoch=train_steps,
                               max_queue_size=4,
                               callbacks=[early_stop, checkpoint])
 
+loss = history.history["loss"]
+val_loss = history.history["val_loss"]
+miou = history.history["mean_iou"]
+val_miou = history.history["val_mean_iou"]
+epochs = range(1, len(loss) + 1)
 
+plt.plot(epochs, loss, color="red", label="training loss")
+plt.plot(epochs, val_loss, color="blue", label="validation loss")
+plt.title("Training and Validation Loss")
+plt.legend()
+
+plt.figure()
+plt.plot(epochs, miou, color="red", label="training MeanIOU")
+plt.plot(epochs, val_miou, color="blue", label="validation MeanIOU")
+plt.title("Training and Validation IOU")
+plt.legend()
