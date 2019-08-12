@@ -1,9 +1,12 @@
 # _*_ coding: utf-8 _*_
 # Author: Jielong
 # @Time: 01/08/2019 14:41
+import os
 import tensorflow as tf
+from datetime import datetime
 from unet.unet_components import weight_init, bias_init, conv2d, max_pool, deconv2d, crop_and_copy
 from unet.loss import dice_loss
+from unet.metrics import mean_iou
 from utils import get_imgs_masks, get_batch_data
 
 
@@ -133,7 +136,7 @@ class UnetModel(object):
 
     def train(self, data_gen, images, labels, n_epochs, n_samples):
         """
-
+        Training unet model
         :param data_gen: data generator to yield image for training
         :param images: the whole dataset of images
         :param labels: the whole dataset of mask images
@@ -141,16 +144,35 @@ class UnetModel(object):
         :param n_samples: total training samples
         :return: None
         """
-        logits = self.build_model(self.x)
 
+        # Create logs directory to store training summary of the model
+        create_time = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+        root_log_dir = "../logs"
+        if not os.path.exists(root_log_dir):
+            os.mkdir(root_log_dir)
+        tf_train_logs = "{}/run-{}".format(root_log_dir, create_time)
+        if not os.path.exists(tf_train_logs):
+            os.mkdir(tf_train_logs)
+
+        logits = self.build_model(self.x)
         with tf.name_scope("training_op"):
             loss = self.get_loss(y_true=self.y, y_preds=logits, loss_mode="dice_loss")
             optimizer = self.get_optimizer(opt="Adam")
             training_op = optimizer.minimize(loss)
 
+        with tf.name_scope("evaluation"):
+            miou = mean_iou(y_true=self.y, y_pred=logits)
+
+        with tf.name_scope("save_training_summary"):
+            loss_summary = tf.compat.v1.summary.scalar(name="Dice_Loss", tensor=loss)
+            iou_summary = tf.compat.v1.summary.scalar(name="IOU", tensor=miou)
+            file_writer = tf.compat.v1.summary.FileWriter(tf_train_logs, tf.compat.v1.get_default_graph())
+
         init = tf.compat.v1.global_variables_initializer()
+        init_local = tf.compat.v1.local_variables_initializer()
         with tf.compat.v1.Session() as sess:
             init.run()
+            init_local.run()
             training_steps_per_epoch = n_samples // self.batch_size
             for epoch in range(n_epochs):
                 print("Start training epoch {}".format(epoch + 1))
@@ -159,7 +181,16 @@ class UnetModel(object):
                     x_batch, y_batch = data_gen(images, labels, step, self.batch_size)
                     loss_val, _ = sess.run([loss, training_op], feed_dict={self.x: x_batch, self.y: y_batch})
                     total_loss += loss_val
-                print("Epoch: {:}, Average loss: {:.4f}".format((epoch + 1), (total_loss / training_steps_per_epoch)))
+                train_iou = miou.eval(feed_dict={self.x: x_batch, self.y: y_batch})
+                print("Epoch: {:}, Average loss: {:.4f}, Mean IOU: {:.4f}".format((epoch + 1), train_iou,
+                                                                                  (total_loss / training_steps_per_epoch)))
+                print("\n")
+                train_loss_summary = loss_summary.eval(feed_dict={self.x: x_batch, self.y: y_batch})
+                train_iou_summary = iou_summary.eval(feed_dict={self.x: x_batch, self.y: y_batch})
+                file_writer.add_summary(train_loss_summary, epoch)
+                file_writer.add_summary(train_iou_summary, epoch)
+            _ = self.dump_model(sess, "../models/tf_model.ckpt")
+            file_writer.close()
 
     @staticmethod
     def get_loss(y_true, y_preds, loss_mode="dice_loss"):
@@ -184,11 +215,15 @@ class UnetModel(object):
         return optimizer
 
     def predict(self, test_data, model_path):
+        tf.reset_default_graph()
         init = tf.compat.v1.global_variables_initializer()
         with tf.Session() as sess:
             sess.run(init)
             self.load_model(sess, model_path)
-            predictions = sess.run(feed_dict={self.x: test_data})
+            graph = tf.get_default_graph()
+            feed_dict = {self.x: test_data}
+            restored_op = graph.get_tensor_by_name("restored_op:0")
+            predictions = sess.run(restored_op, feed_dict=feed_dict)
         return predictions
 
     def model_evaluation(self):
@@ -196,15 +231,15 @@ class UnetModel(object):
 
     @staticmethod
     def dump_model(sess, model_path):
-        saver = tf.train.Saver()
+        saver = tf.compat.v1.train.Saver()
         saved_path = saver.save(sess, model_path)
         print("Model has been saved into disk at path: %s" % saved_path)
         return saved_path
 
     @staticmethod
     def load_model(sess, model_path):
-        saver = tf.train.Saver()
-        saver.restore(sess, model_path)
+        saver = tf.compat.v1.train.import_meta_graph(model_path + ".meta")
+        saver.restore(sess, tf.compat.v1.train.latest_checkpoint("./"))
         print("Model Loaded!")
 
 

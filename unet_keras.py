@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 from keras.layers.core import Dropout
 from keras.layers.convolutional import Conv2D, Conv2DTranspose
@@ -71,13 +72,17 @@ model = Model(inputs=[inputs], outputs=[outputs])
 model.compile(optimizer='adam', loss=[dice_loss], metrics=[mean_iou])
 print(model.summary())
 batch_size = 4
+model_save_path = "./models"
+if not os.path.exists(model_save_path):
+    os.mkdir(model_save_path)
+
 train_gen = img_batch_generator(tr_paths["train_imgs"], tr_paths["train_mask"], batch_size=batch_size)
 val_gen = img_batch_generator(v_paths["val_imgs"], v_paths["val_mask"], batch_size=batch_size)
 
 train_steps = len(tr_paths["train_imgs"]) // batch_size
 val_steps = len(v_paths["val_imgs"]) // batch_size
 early_stop = EarlyStopping(patience=10, verbose=1)
-checkpoint = ModelCheckpoint("keras_unet_model.h5", verbose=1, save_best_only=True)
+checkpoint = ModelCheckpoint(os.path.join(model_save_path, "keras_unet_model.h5"), verbose=1, save_best_only=True)
 history = model.fit_generator(train_gen, steps_per_epoch=train_steps,
                               epochs=50,
                               validation_data=val_gen,
