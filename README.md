@@ -1,5 +1,5 @@
 # Full Re-implementation of UNet for Medical Image Segmentation
-This is a full implementation of UNet using **TensorFlow with low level API** and **high level API** as well as **Keras**.
+This is a full implementation of UNet using **TensorFlow with low level API** and **high level API** as well as **Keras**. This repository is still work in progress, things may be changed over time.
 
 If you need to read detailed description of UNet architecture, please refer to journal article which was proposed by Ronneberger et al. [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/pdf/1505.04597.pdf)
 
