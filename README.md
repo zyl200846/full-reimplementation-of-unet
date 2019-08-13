@@ -35,6 +35,10 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 ### Segmentation results with TF Low Level API
 
 ##### Training loss and mIOU
+<p align="center">
+	<img src="https://github.com/JielongZ/full-reimplementation-of-unet/blob/master/images/save_training_summary_Dice_Loss.svg" width="300" height="280">
+	<img src="https://github.com/JielongZ/full-reimplementation-of-unet/blob/master/images/save_training_summary_IOU.svg" width="300" height="280">
+</p>
 
 ### Segmentation results with TF High Level API
 
