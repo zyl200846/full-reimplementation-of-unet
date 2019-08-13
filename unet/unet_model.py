@@ -129,7 +129,7 @@ class UnetModel(object):
             W = weight_init(w_shape=(1, 1, self.feat_maps_root, 1), std=stddev)
             b = bias_init(value=0.1, shape=[1], name="final_out_bias")
             output = conv2d(X=deconv_rslt[-1][1], W=W, b=b, rate=0.1)
-            output = tf.nn.sigmoid(output)
+            output = tf.nn.sigmoid(output, name="sigmoid_out")
             print("final output shape", output.shape)
 
         return output
@@ -158,9 +158,9 @@ class UnetModel(object):
         with tf.name_scope("training_op"):
             loss = self.get_loss(y_true=self.y, y_preds=logits, loss_mode="dice_loss")
             optimizer = self.get_optimizer(opt="Adam")
-            training_op = optimizer.minimize(loss)
+            training_op = optimizer.minimize(loss, name="training_op")
 
-        with tf.name_scope("evaluation"):
+        with tf.name_scope("mean_iou"):
             miou = mean_iou(y_true=self.y, y_pred=logits)
 
         with tf.name_scope("save_training_summary"):
@@ -215,19 +215,7 @@ class UnetModel(object):
                 optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate=self.learning_rate)
         return optimizer
 
-    def predict(self, test_data, model_path):
-        tf.reset_default_graph()
-        init = tf.compat.v1.global_variables_initializer()
-        with tf.Session() as sess:
-            sess.run(init)
-            self.load_model(sess, model_path)
-            graph = tf.get_default_graph()
-            feed_dict = {self.x: test_data}
-            restored_op = graph.get_tensor_by_name("restored_op:0")
-            predictions = sess.run(restored_op, feed_dict=feed_dict)
-        return predictions
-
-    def model_evaluation(self):
+    def predict(self, x_test, model_path):
         pass
 
     @staticmethod
