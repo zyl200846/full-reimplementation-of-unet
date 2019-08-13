@@ -1,7 +1,9 @@
 # _*_ coding: utf-8 _*_
 # Author: Jielong
 # Creation Time: 25/07/2019 11:51
+import os
 import tensorflow as tf
+from datetime import datetime
 from unet.loss import dice_loss
 from unet.metrics import mean_iou
 from utils import get_imgs_masks, get_batch_data
@@ -106,9 +108,25 @@ logits = tf.nn.sigmoid(conv10)
 with tf.name_scope("loss"):
     # loss = cross_entropy(labels=tf.reshape(y_train, [-1, 2]), logits=tf.reshape(logits, [-1, 2]))
     loss = dice_loss(y_true=y_train, y_pred=logits)
-    iou = mean_iou(y_true=y_train, y_pred=logits)
     optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=lr)
     training_op = optimizer.minimize(loss)
+
+with tf.name_scope("evaluation"):
+    miou = mean_iou(y_true=y_train, y_pred=logits)
+
+# Create logs directory to store training summary of the model
+create_time = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+root_log_dir = "./logs"
+if not os.path.exists(root_log_dir):
+    os.mkdir(root_log_dir)
+tf_train_logs = "{}/run-{}".format(root_log_dir, create_time)
+if not os.path.exists(tf_train_logs):
+    os.mkdir(tf_train_logs)
+
+with tf.name_scope("save_training_summary"):
+    loss_summary = tf.compat.v1.summary.scalar(name="Dice_Loss", tensor=loss)
+    iou_summary = tf.compat.v1.summary.scalar(name="IOU", tensor=miou)
+    file_writer = tf.compat.v1.summary.FileWriter(tf_train_logs, tf.compat.v1.get_default_graph())
 
 image_folder = "./data/2d_images/"
 masks_folder = "./data/2d_masks/"
@@ -116,25 +134,31 @@ masks_folder = "./data/2d_masks/"
 images, labels = get_imgs_masks(image_folder, masks_folder)
 # print(images[0].shape)
 batch_size = 4
-n_epochs = 40
+n_epochs = 10
 n_iteration_per_epoch = len(images) // batch_size
 # x_batch, y_batch = get_batch_data(images, labels, iter_step=0, batch_size=batch_size)
 
 init = tf.compat.v1.global_variables_initializer()
+init_local = tf.compat.v1.local_variables_initializer()
+saver = tf.compat.v1.train.Saver()
 with tf.compat.v1.Session() as sess:
     init.run()
-    # for epoch in range(n_epochs):
-    #     loss_val, _ = sess.run([loss, training_op], feed_dict={x_train: x_batch, y_train: y_batch, lr: 0.001})
-    #     print(loss_val)
+    init_local.run()
     for epoch in range(n_epochs):
         total_loss = 0
-        # iou_values = 0
         print("Start training epoch {}".format(epoch + 1))
         for i in range(n_iteration_per_epoch):
             x_batch, y_batch = get_batch_data(images, labels, iter_step=i, batch_size=batch_size)
             loss_val, _ = sess.run([loss, training_op],
                                    feed_dict={x_train: x_batch, y_train: y_batch, lr: 0.0001})
             total_loss += loss_val
-            # iou_values += iou_val
-        print("Epoch {}, loss: {}".format(epoch + 1, total_loss / n_iteration_per_epoch))
-
+        iou_val = miou.eval(feed_dict={x_train: x_batch, y_train: y_batch})
+        print("Epoch {}, loss: {}, IOU: {}".format(epoch + 1,
+                                                   total_loss / n_iteration_per_epoch,
+                                                   iou_val))
+        train_loss_summary = loss_summary.eval(feed_dict={x_train: x_batch, y_train: y_batch})
+        train_iou_summary = iou_summary.eval(feed_dict={x_train: x_batch, y_train: y_batch})
+        file_writer.add_summary(train_loss_summary, epoch)
+        file_writer.add_summary(train_iou_summary, epoch)
+    saver.save(sess, "./models/tf_unet_model.ckpt")
+    file_writer.close()

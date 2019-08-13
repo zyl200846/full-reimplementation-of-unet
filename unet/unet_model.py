@@ -182,8 +182,9 @@ class UnetModel(object):
                     loss_val, _ = sess.run([loss, training_op], feed_dict={self.x: x_batch, self.y: y_batch})
                     total_loss += loss_val
                 train_iou = miou.eval(feed_dict={self.x: x_batch, self.y: y_batch})
-                print("Epoch: {:}, Average loss: {:.4f}, Mean IOU: {:.4f}".format((epoch + 1), train_iou,
-                                                                                  (total_loss / training_steps_per_epoch)))
+                print("Epoch: {:}, Average loss: {:.4f}, Mean IOU: {:.4f}".format(epoch + 1,
+                                                                                  total_loss / training_steps_per_epoch,
+                                                                                  train_iou))
                 print("\n")
                 train_loss_summary = loss_summary.eval(feed_dict={self.x: x_batch, self.y: y_batch})
                 train_iou_summary = iou_summary.eval(feed_dict={self.x: x_batch, self.y: y_batch})
@@ -251,6 +252,6 @@ if __name__ == "__main__":
     # print(images[0].shape)
     no_samples = images.shape[0]
     batch_size = 4
-    n_epochs = 40
+    n_epochs = 10
     unet = UnetModel()
     unet.train(data_gen=get_batch_data, images=images, labels=labels, n_epochs=n_epochs, n_samples=no_samples)
