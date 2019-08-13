@@ -130,6 +130,7 @@ class UnetModel(object):
             b = bias_init(value=0.1, shape=[1], name="final_out_bias")
             output = conv2d(X=deconv_rslt[-1][1], W=W, b=b, rate=0.1)
             output = tf.nn.sigmoid(output, name="sigmoid_out")
+            tf.add_to_collection("network_architecture", output)
             print("final output shape", output.shape)
 
         return output
@@ -239,7 +240,6 @@ if __name__ == "__main__":
     images, labels = get_imgs_masks(image_folder, masks_folder)
     # print(images[0].shape)
     no_samples = images.shape[0]
-    batch_size = 4
     n_epochs = 10
     unet = UnetModel()
     unet.train(data_gen=get_batch_data, images=images, labels=labels, n_epochs=n_epochs, n_samples=no_samples)

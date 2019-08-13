@@ -25,12 +25,13 @@ if __name__ == "__main__":
     saver = tf.compat.v1.train.import_meta_graph("./models/tf_model.ckpt.meta")
     saver.restore(sess, tf.compat.v1.train.latest_checkpoint("./models/"))
     graph = tf.get_default_graph()
-    x_test = graph.get_tensor_by_name("x_input:0")
-    y_test = graph.get_tensor_by_name("y_label:0")
+    # x_test = graph.compat.v1.get_tensor_by_name("x_input:0")
+    x_test = graph.compat.v1.get_operation_by_name("x_input").outputs[0]
+    y_test = tf.compat.v1.get_collection("network_architecture")[0]
     # op_to_restore = graph.get_tensor_by_name("final_output:0")
     # get_final_ouput_op = graph.get_tensor_by_name("Sigmoid:0")
-    for op in graph.get_operations():
-        print(op)
+    # for op in graph.get_operations():
+    #     print(op)
 
     # image_folder = "./data/2d_images/"
     # masks_folder = "./data/2d_masks/"
