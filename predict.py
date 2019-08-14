@@ -32,6 +32,6 @@ with tf.compat.v1.Session() as sess:
 
 preds_val = predictions[0]
 print("halo shape: ", preds_val.shape)
-preds_val = (preds_val >= 0.5).astype(np.uint8)
+preds_val = (preds_val >= 0.5).astype(np.uint32)
 imshow(np.squeeze(preds_val[1]))
 plt.show()
