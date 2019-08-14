@@ -3,6 +3,8 @@ This is a full implementation of UNet using **TensorFlow with low level API** an
 
 If you need to read detailed description of UNet architecture, please refer to journal article which was proposed by Ronneberger et al. [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/pdf/1505.04597.pdf)
 
+Dataset: LUNA 2016 lung segmentation (due to the limited hardware resources, only use part of the dataset)
+
 ## Differences compared to original paper
 This code can be trained to segmenting arbitrary sizes/shapes of images. However, one should be noticed that **there are some differences between this code and the original one described by the UNet proposer**:
 * The original paper used "relu" as activation function followed by every convolution, while I used "elu" here so as to avoid dying relu caused by relu operation; (Notice that this might not necessarily happen in UNet architecture if one trains the model with certain depth)
