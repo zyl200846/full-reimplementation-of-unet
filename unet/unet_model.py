@@ -2,8 +2,10 @@
 # Author: Jielong
 # @Time: 01/08/2019 14:41
 import os
+import numpy as np
 import tensorflow as tf
 from datetime import datetime
+from skimage import img_as_int, io
 from unet.unet_components import weight_init, bias_init, conv2d, max_pool, deconv2d, crop_and_copy
 from unet.loss import dice_loss
 from unet.metrics import mean_iou
@@ -217,6 +219,14 @@ class UnetModel(object):
         return optimizer
 
     def predict(self, x_test, y_test, model_path):
+        """
+        Use to predict batch data so as to get predicted results
+        :param x_test: the test images
+        :param y_test: the test masks
+        :param model_path: the path stores trained model
+        :return: predictions (uint8)
+        """
+        tf.reset_default_graph()
         with tf.compat.v1.Session() as sess:
             saver = tf.compat.v1.train.import_meta_graph(model_path + ".meta")
             saver.restore(sess, model_path)
@@ -231,6 +241,18 @@ class UnetModel(object):
                 preds = sess.run(y, feed_dict={x: x_batch})
                 predictions.append(preds)
         return predictions
+
+    @staticmethod
+    def save_images(predictions, segmented_folder):
+        if not os.path.exists(segmented_folder):
+            os.mkdir(segmented_folder)
+
+        for i, batch_preds in enumerate(predictions):
+            batch_preds = (batch_preds >= 0.5).astype(np.uint8)
+            n_images = batch_preds.shape[0]
+            for j in range(n_images):
+                img_arr = img_as_int(np.squeeze(batch_preds[j]))
+                io.imsave(fname=segmented_folder + "/img_{}_{}.png".format(i, j), arr=img_arr)
 
     @staticmethod
     def dump_model(sess, model_path):
@@ -256,4 +278,5 @@ if __name__ == "__main__":
     n_epochs = 10
     unet = UnetModel()
     unet.train(data_gen=get_batch_data, images=images, labels=labels, n_epochs=n_epochs, n_samples=no_samples)
-    unet.predict(images, labels, "../models/tf_model.ckpt")
+    test_preds = unet.predict(images, labels, "../models/tf_model.ckpt")
+    unet.save_images(predictions=test_preds, segmented_folder="./segmented_results")

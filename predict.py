@@ -4,7 +4,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-from skimage.io import imshow
+from skimage.io import imshow, imsave
+from skimage import img_as_int
 from utils import get_batch_data, get_imgs_masks
 
 
@@ -30,8 +31,12 @@ with tf.compat.v1.Session() as sess:
         print(prediction.shape)
         predictions.append(prediction)
 
-preds_val = predictions[0]
-print("halo shape: ", preds_val.shape)
-preds_val = (preds_val >= 0.5).astype(np.uint32)
-imshow(np.squeeze(preds_val[1]))
-plt.show()
+print("shape of images: ", np.array(predictions).shape)
+# preds_val = predictions[0]
+# print("halo shape: ", preds_val.shape)
+# preds_val = (preds_val >= 0.5).astype(np.uint8)
+# print(preds_val[0].shape)
+# print(np.squeeze(preds_val[1]).shape)
+# # imsave(fname="./pred.png", arr=img_as_int(np.squeeze(preds_val[1])))
+# imshow(np.squeeze(preds_val[1]))
+# plt.show()

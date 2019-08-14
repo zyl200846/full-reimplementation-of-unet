@@ -16,7 +16,7 @@ def main():
     n_epochs = 40
     unet = UnetModel()
     unet.train(data_gen=get_batch_data, images=images, labels=labels, n_epochs=n_epochs, n_samples=no_samples)
-    unet.predict(images, labels, "./models/tf_model.ckpt")
+    predictions = unet.predict(images, labels, "./models/tf_model.ckpt")
 
 
 if __name__ == "__main__":
