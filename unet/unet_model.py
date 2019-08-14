@@ -216,8 +216,21 @@ class UnetModel(object):
                 optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate=self.learning_rate)
         return optimizer
 
-    def predict(self, x_test, model_path):
-        pass
+    def predict(self, x_test, y_test, model_path):
+        with tf.compat.v1.Session() as sess:
+            saver = tf.compat.v1.train.import_meta_graph(model_path + ".meta")
+            saver.restore(sess, model_path)
+            graph = tf.compat.v1.get_default_graph()
+            x = graph.get_operation_by_name("x_input").outputs[0]
+            y = tf.compat.v1.get_collection("network_architecture")[0]
+            no_samples = x_test.shape[0]
+            predictions = []
+            n_iteration = no_samples // self.batch_size
+            for step in range(n_iteration):
+                x_batch, y_batch = get_batch_data(x_test, y_test, iter_step=step, batch_size=self.batch_size)
+                preds = sess.run(y, feed_dict={x: x_batch})
+                predictions.append(preds)
+        return predictions
 
     @staticmethod
     def dump_model(sess, model_path):
@@ -243,3 +256,4 @@ if __name__ == "__main__":
     n_epochs = 10
     unet = UnetModel()
     unet.train(data_gen=get_batch_data, images=images, labels=labels, n_epochs=n_epochs, n_samples=no_samples)
+    unet.predict(images, labels, "../models/tf_model.ckpt")
