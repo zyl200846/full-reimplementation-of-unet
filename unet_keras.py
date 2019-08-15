@@ -82,7 +82,8 @@ val_gen = img_batch_generator(v_paths["val_imgs"], v_paths["val_mask"], batch_si
 train_steps = len(tr_paths["train_imgs"]) // batch_size
 val_steps = len(v_paths["val_imgs"]) // batch_size
 early_stop = EarlyStopping(patience=10, verbose=1)
-checkpoint = ModelCheckpoint(os.path.join(model_save_path, "keras_unet_model.h5"), verbose=1, save_best_only=True)
+checkpoint = ModelCheckpoint(os.path.join(model_save_path, "./models/keras_unet_model.h5"),
+                             verbose=1, save_best_only=True)
 history = model.fit_generator(train_gen, steps_per_epoch=train_steps,
                               epochs=50,
                               validation_data=val_gen,
