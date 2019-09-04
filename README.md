@@ -45,6 +45,10 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 ### Segmentation results with TF High Level API
 
 ##### Training loss and mIOU
+<p align="center">
+	<img src="https://github.com/JielongZ/full-reimplementation-of-unet/blob/master/images/save_training_summary_Dice_Loss(1).svg" width="300" height="280">
+	<img src="https://github.com/JielongZ/full-reimplementation-of-unet/blob/master/images/save_training_summary_IOU(1).svg" width="300" height="280">
+</p>
 
 ### Segementation results with Keras
 ##### The left image is the ground truth while the right image is the segmentation result.
