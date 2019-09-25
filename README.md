@@ -10,7 +10,7 @@ This code can be trained to segmenting arbitrary sizes/shapes of images. However
 * The original paper used "relu" as activation function followed by every convolution, while I used "elu" here so as to avoid dying relu caused by relu operation; (Notice that this might not necessarily happen in UNet architecture if one trains the model with certain depth)
 * Using "Adam" optimizer instead of "SGD" for better convergence. If you want to train the model with SGD you can change it in the code;
 * Using "same" padding instead of "valid" padding so as to make the final output have the same size as input images;
-* Adding "Batch Normalization" to accelerate training, reduce internal covariant shift, allow use of saturating non-linearities and higher learning rates, [refer here to check why we use BN in deep CNN](https://gist.github.com/shagunsodhani/4441216a298df0fe6ab0);
+* Adding "Batch Normalization" to accelerate training, reduce internal covariant shift, allow use of saturating non-linearities and higher learning rates, [refer here to check why we use BN in deep CNN](https://gist.github.com/shagunsodhani/4441216a298df0fe6ab0); **TODO**
 * As this code is tested on a binary dataset, so I used "sigmoid" as final activation function to generate output instead of pixel-wise softmax mentioned in the paper;
 * Besides, I did not calculate the loss using cross entropy. Instead, dice-loss was applied.
 
